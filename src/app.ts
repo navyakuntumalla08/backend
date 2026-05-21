@@ -43,7 +43,6 @@ app.use('/v1/auth',authRoute);
 
 app.use(routeErrors);
 app.use(notFound);
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 const sequelize = new Sequelize(
