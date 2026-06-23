@@ -1,17 +1,13 @@
-// import Redis from "ioredis";
 
-// const redis = new Redis({
-//     host:'127.0.0.1',
-//     port:6379,
-//     password:''
-// })            
+import Redis from 'ioredis';
+import { PASSWORD, HOST, PORT} from './env.config';
+const redisClient = new Redis({
+    host: HOST,
+    port: Number(PORT),
+    password: PASSWORD,
+});
 
-// redis.on('connect',()=>{
-//     console.log("✅ Connected to Redis")
-// })
 
-// redis.on("error", (err) => {
-//   console.error("❌ Redis error:", err);
-// });
+export default redisClient;
 
-// export default redis;
+export const ALL_USERS_CACHE_KEY = 'ALL_USERS';

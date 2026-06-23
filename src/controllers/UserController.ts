@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
 import User from "../models/user";
-import argon2 from "argon2";
-import passport from '../config/passport.config'
-// import AuthenticationService from "../services/Auth/AuthenticationService";
-import Jwt, { TokenExpiredError, JsonWebTokenError } from "jsonwebtoken";
-import { JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY } from "../config/app.config";
-// import redis from "../config/redis";
+import redisClient, { ALL_USERS_CACHE_KEY } from "../config/redis";
 
 export class UserController {
     public static async getAllUsers(req: Request, res: Response | any): Promise<any> {
         try {
             const data = await User.findAll({
-                attributes: { exclude: ['password'] }
+                attributes: ['id', 'firstName', 'lastName', 'email', 'userName'],
+                order: [['firstName', 'ASC']],
+                raw: true
             });
-            // console.log("resp", resp)
+            const responseData = data.map(async (user: any) => {
+                await redisClient.hset(ALL_USERS_CACHE_KEY, { [`${user.id}`]: JSON.stringify({ ...user, status: 0 }) });
+            });
+            await Promise.all(responseData);
             return res.successResponse('User response successful.', data);
         } catch (error) {
             return res.errorResponse("something went wrong.", error);
